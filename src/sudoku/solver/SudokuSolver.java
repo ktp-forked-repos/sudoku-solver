@@ -2,16 +2,18 @@ package sudoku.solver;
 
 import fxsolver.FxSolver;
 import javafx.application.Application;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.geometry.Pos;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.scene.layout.GridPane;
 import org.controlsfx.dialog.Dialogs;
 
 /**
@@ -21,6 +23,7 @@ import org.controlsfx.dialog.Dialogs;
 public class SudokuSolver extends Application {
     
     private SudokuModel model;
+    private GridPane sudokuTable;
     
     @Override
     public void start(Stage primaryStage) {
@@ -29,32 +32,54 @@ public class SudokuSolver extends Application {
         btn.setOnAction((ActionEvent event) -> {
             Dialogs msgBox = Dialogs.create();
             msgBox.title("Message");
-            msgBox.message("Not implemented yet!");
-            msgBox.masthead("Error");
-            msgBox.showInformation();
+            msgBox.masthead("Sudoku solution");        
+            
+            int[][] cells = new int[9][9];
+            
+            for (int i = 0; i < 9; ++i) {
+                for (int j = 0; j < 9; ++j) {
+                    ComboBox tempBox = (ComboBox)getNodeByRowColumnIndex(i, j);
+                    cells[i][j] = (int)tempBox.getValue();
+                }
+            }
+            
+            if (util(cells)) {
+                for (int i = 0; i < 9; ++i) {
+                    for (int j = 0; j < 9; ++j) {
+                        ComboBox tempBox = (ComboBox)getNodeByRowColumnIndex(i, j);
+                        tempBox.setValue(cells[i][j]);
+                    }
+                }
+                
+                msgBox.message("Solution was found!");
+                msgBox.showInformation();
+            } else {
+                msgBox.message("There is no solution!");
+                msgBox.showInformation();
+            }
         });
  
-        GridPane sudokuTable = new GridPane();
+        sudokuTable = new GridPane();
         sudokuTable.setAlignment(Pos.CENTER);
         sudokuTable.setHgap(5);
         sudokuTable.setVgap(5);
         
-        for (int i = 0; i < 3; ++i) {
-            for (int j = 0; j < 3; ++j) {
+        for (int i = 0; i < 9; ++i) {
+            for (int j = 0; j < 9; ++j) {
                 ComboBox tempBox = new ComboBox();
                 tempBox.getItems().addAll(
-                    "0",
-                    "1",
-                    "2",
-                    "3",
-                    "4",
-                    "5",
-                    "6",
-                    "7",
-                    "8",
-                    "9"
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9
                 );
-                tempBox.setValue("0");
+                tempBox.setValue(0);
                 sudokuTable.add(tempBox, i, j);
             }
         }
@@ -67,7 +92,7 @@ public class SudokuSolver extends Application {
         StackPane root = new StackPane(vbox);
         root.setAlignment(Pos.CENTER);     
         
-        Scene scene = new Scene(root, 260, 250);
+        Scene scene = new Scene(root, 640, 480);
         
         primaryStage.setTitle("Sudoku solver");
         primaryStage.setScene(scene);
@@ -94,5 +119,17 @@ public class SudokuSolver extends Application {
     
     public static boolean util(int[][] cells) {
         return FxSolver.solve(cells);
+    }
+    
+    public Node getNodeByRowColumnIndex(final int column, final int row) {
+        Node result = null;
+        ObservableList<Node> childrens = sudokuTable.getChildren();
+        for(Node node : childrens) {
+            if(sudokuTable.getRowIndex(node) == row && sudokuTable.getColumnIndex(node) == column) {
+                result = node;
+                break;
+            }
+        }
+        return result;
     }
 }
