@@ -1,8 +1,8 @@
 package sudoku.solver;
 
+import fxsolver.FxSolver;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -20,20 +20,18 @@ import org.controlsfx.dialog.Dialogs;
  */
 public class SudokuSolver extends Application {
     
+    private SudokuModel model;
+    
     @Override
     public void start(Stage primaryStage) {
         Button btn = new Button();
         btn.setText("Solve sudoku");
-        btn.setOnAction(new EventHandler<ActionEvent>() {
-            
-            @Override
-            public void handle(ActionEvent event) {
-                Dialogs msgBox = Dialogs.create();
-                msgBox.title("Message");
-                msgBox.message("Not implemented yet!");
-                msgBox.masthead("Error");
-                msgBox.showInformation();
-            }
+        btn.setOnAction((ActionEvent event) -> {
+            Dialogs msgBox = Dialogs.create();
+            msgBox.title("Message");
+            msgBox.message("Not implemented yet!");
+            msgBox.masthead("Error");
+            msgBox.showInformation();
         });
  
         GridPane sudokuTable = new GridPane();
@@ -75,6 +73,16 @@ public class SudokuSolver extends Application {
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.show();
+        
+//        try {
+//            this.model = new SudokuModel();
+//        } catch (JPLException ex) {
+//            Dialogs msgBox = Dialogs.create();
+//            msgBox.title("Message");
+//            msgBox.message(ex.getMessage());
+//            msgBox.masthead("Error");
+//            msgBox.showInformation();
+//        }
     }
 
     /**
@@ -84,4 +92,7 @@ public class SudokuSolver extends Application {
         launch(args);
     }
     
+    public static boolean util(int[][] cells) {
+        return FxSolver.solve(cells);
+    }
 }
