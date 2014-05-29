@@ -3,6 +3,13 @@ sudoku-solver
 
 A little sudoku solver using JavaFX for GUI and SWI-Prolog for AI.
 
+Screenshots :D
+-------------
+
+![sudoku entering](http://i.imgur.com/berumnh.png)
+<p>&darr;</p>
+![sudoku solved!](http://i.imgur.com/ya3qWkT.png)
+
 Running
 =============
 
