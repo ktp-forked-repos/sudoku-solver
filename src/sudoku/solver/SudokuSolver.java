@@ -16,14 +16,26 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.controlsfx.dialog.Dialogs;
 
+
 /**
  * Main application class.
  * @author Владимир
  */
 public class SudokuSolver extends Application {
     
-    private SudokuModel model;
+    private SudokuModel model = new SudokuModel();
     private GridPane sudokuTable;
+    private final int[][] initsudoku1 = {
+            {1,0,0,8,9,4,3,2,7},
+            {9,2,8,7,3,1,4,5,6},
+            {4,7,3,2,6,5,9,1,8},
+            {3,6,0,4,1,7,8,9,5},
+            {7,8,9,3,5,2,6,4,1},
+            {5,1,4,0,8,6,2,7,3},
+            {8,3,1,5,4,9,7,6,2},
+            {6,0,7,0,2,3,5,8,4},
+            {2,4,0,6,7,0,1,3,0}
+    };
     
     @Override
     public void start(Stage primaryStage) {
@@ -42,7 +54,8 @@ public class SudokuSolver extends Application {
                     cells[i][j] = (int)tempBox.getValue();
                 }
             }
-            
+
+            model.solve(cells);
             if (util(cells)) {
                 for (int i = 0; i < 9; ++i) {
                     for (int j = 0; j < 9; ++j) {
@@ -79,7 +92,7 @@ public class SudokuSolver extends Application {
                     8,
                     9
                 );
-                tempBox.setValue(0);
+                tempBox.setValue(initsudoku1[i][j]);
                 sudokuTable.add(tempBox, i, j);
             }
         }
