@@ -18,14 +18,12 @@ import org.controlsfx.dialog.Dialogs;
 import jpl.*;
 
 import java.lang.Integer;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
 /**
  * Main application class.
- * @author Владимир
+ * @author Владимир, Pahomov Dmitry
  */
 public class SudokuSolver extends Application {
     

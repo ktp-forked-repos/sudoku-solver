@@ -3,11 +3,12 @@ package sudoku.solver;
 import jpl.*;
 
 import java.lang.Integer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Realizes interaction with SWI-Prolog.
- * @author Владимир
+ * @author Владимир, Pahomov Dmitry
  */
 public class SudokuModel {
     
