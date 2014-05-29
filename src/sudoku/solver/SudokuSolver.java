@@ -1,6 +1,5 @@
 package sudoku.solver;
 
-import fxsolver.FxSolver;
 import javafx.application.Application;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -189,10 +188,6 @@ public class SudokuSolver extends Application {
      */
     public static void main(String[] args) {
         launch(args);
-    }
-    
-    public static boolean util(int[][] cells) {
-        return FxSolver.solve(cells);
     }
     
     public Node getNodeByRowColumnIndex(final int column, final int row) {
