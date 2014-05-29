@@ -15,6 +15,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.controlsfx.dialog.Dialogs;
+import jpl.*;
 
 /**
  * Main application class.
@@ -43,7 +44,8 @@ public class SudokuSolver extends Application {
                 }
             }
             
-            if (util(cells)) {
+            this.model.solve(cells);
+            if (false) {
                 for (int i = 0; i < 9; ++i) {
                     for (int j = 0; j < 9; ++j) {
                         ComboBox tempBox = (ComboBox)getNodeByRowColumnIndex(i, j);
@@ -99,15 +101,15 @@ public class SudokuSolver extends Application {
         primaryStage.setResizable(false);
         primaryStage.show();
         
-//        try {
-//            this.model = new SudokuModel();
-//        } catch (JPLException ex) {
-//            Dialogs msgBox = Dialogs.create();
-//            msgBox.title("Message");
-//            msgBox.message(ex.getMessage());
-//            msgBox.masthead("Error");
-//            msgBox.showInformation();
-//        }
+        try {
+            this.model = new SudokuModel();
+        } catch (JPLException ex) {
+            Dialogs msgBox = Dialogs.create();
+            msgBox.title("Message");
+            msgBox.message(ex.getMessage());
+            msgBox.masthead("Error");
+            msgBox.showInformation();
+        }
     }
 
     /**
