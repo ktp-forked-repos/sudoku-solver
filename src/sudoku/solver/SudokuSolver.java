@@ -10,7 +10,9 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -30,6 +32,9 @@ public class SudokuSolver extends Application {
     private SudokuModel model = null;
     private GridPane sudokuTable;
     ComboBox templateselectioncombobox = new ComboBox();
+    Button btn = new Button();
+    Button reloadbtn = new Button();
+
     private final int[][][] initsudoku = {
             {
                     {1,0,0,8,9,4,3,2,7},
@@ -80,6 +85,7 @@ public class SudokuSolver extends Application {
     
     @Override
     public void start(Stage primaryStage) {
+        Label templatelabel = new Label("Select template: ");
         templateselectioncombobox.getItems().setAll(
                 1,
                 2,
@@ -89,11 +95,10 @@ public class SudokuSolver extends Application {
         templateselectioncombobox.setValue(1);
         templateselectioncombobox.setOnAction((event) -> {
             initSudokuValues();
+            btn.setVisible(true);
+            reloadbtn.setVisible(false);
         });
 
-        Button reloadbtn = new Button();
-
-        Button btn = new Button();
         btn.setText("Solve sudoku");
         btn.setOnAction((ActionEvent event) -> {
             Dialogs msgBox = Dialogs.create();
@@ -105,7 +110,9 @@ public class SudokuSolver extends Application {
             for (int i = 0; i < 9; ++i) {
                 for (int j = 0; j < 9; ++j) {
                     ComboBox tempBox = (ComboBox)getNodeByRowColumnIndex(i, j);
-                    cells[i][j] = (int)tempBox.getValue();
+                    final Object valincombobox = tempBox.getValue();
+                    final int val = valincombobox instanceof String ? 0 : ((int)valincombobox);
+                    cells[i][j] = val;
                 }
             }
 
@@ -114,24 +121,24 @@ public class SudokuSolver extends Application {
             for (int i = 0; i < 9; ++i) {
                 for (int j = 0; j < 9; ++j) {
                     ComboBox tempBox = new ComboBox();
-                    List<Integer> toView = matrix.get(i).get(j);
-                    if (toView.size() > 1) {
-                        toView.add(0,0);
-                    }
+                    final List<Integer> toView = matrix.get(i).get(j);
                     tempBox.getItems().setAll(toView);
+                    if (toView.size() > 1) {
+                        tempBox.getItems().add(0, "?");
+                    }
                     tempBox.getSelectionModel().select(0);
                     sudokuTable.add(tempBox, i, j);
                 }
             }
 
-            msgBox.message("Complite!");
-            msgBox.showInformation();
+            //msgBox.message("Complete!");
+            //msgBox.showInformation();
             btn.setVisible(false);
             reloadbtn.setVisible(true);
         });
 
 
-        reloadbtn.setText("Again");
+        reloadbtn.setText("Again!");
         reloadbtn.setOnAction((ActionEvent event) -> {
             initSudokuValues();
             btn.setVisible(true);
@@ -145,8 +152,13 @@ public class SudokuSolver extends Application {
         sudokuTable.setVgap(5);
 
         initSudokuValues();
-        
-        VBox vbox = new VBox(templateselectioncombobox, sudokuTable, btn, reloadbtn);
+
+        HBox templateline = new HBox(templatelabel, templateselectioncombobox);
+        templateline.setAlignment(Pos.CENTER);
+        templateline.setPadding(new Insets(10));
+        templateline.setSpacing(10);
+
+        VBox vbox = new VBox(templateline, sudokuTable, btn, reloadbtn);
         vbox.setAlignment(Pos.CENTER);
         vbox.setPadding(new Insets(10));
         vbox.setSpacing(10);
@@ -202,7 +214,7 @@ public class SudokuSolver extends Application {
             for (int j = 0; j < 9; ++j) {
                 ComboBox c = new ComboBox();
                 c.getItems().setAll(
-                        0,
+                        "?",
                         1,
                         2,
                         3,
@@ -213,8 +225,8 @@ public class SudokuSolver extends Application {
                         8,
                         9
                 );
-
-                c.setValue(initsudoku[templatenum][i][j]);
+                final Object valtoset = initsudoku[templatenum][i][j] == 0 ? "?" : initsudoku[templatenum][i][j];
+                c.setValue(valtoset);
                 sudokuTable.add(c, i, j);
             }
         }
