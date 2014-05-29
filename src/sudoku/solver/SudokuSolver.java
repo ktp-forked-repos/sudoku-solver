@@ -17,6 +17,11 @@ import javafx.stage.Stage;
 import org.controlsfx.dialog.Dialogs;
 import jpl.*;
 
+import java.lang.Integer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 
 /**
  * Main application class.
@@ -24,22 +29,72 @@ import jpl.*;
  */
 public class SudokuSolver extends Application {
     
-    private SudokuModel model = new SudokuModel();
+    private SudokuModel model = null;
     private GridPane sudokuTable;
-    private final int[][] initsudoku1 = {
-            {1,0,0,8,9,4,3,2,7},
-            {9,2,8,7,3,1,4,5,6},
-            {4,7,3,2,6,5,9,1,8},
-            {3,6,0,4,1,7,8,9,5},
-            {7,8,9,3,5,2,6,4,1},
-            {5,1,4,0,8,6,2,7,3},
-            {8,3,1,5,4,9,7,6,2},
-            {6,0,7,0,2,3,5,8,4},
-            {2,4,0,6,7,0,1,3,0}
+    ComboBox templateselectioncombobox = new ComboBox();
+    private final int[][][] initsudoku = {
+            {
+                    {1,0,0,8,9,4,3,2,7},
+                    {9,2,8,7,3,1,4,5,6},
+                    {4,7,3,2,6,5,9,1,8},
+                    {3,6,0,4,1,7,8,9,5},
+                    {7,8,9,3,5,2,6,4,1},
+                    {5,1,4,0,8,6,2,7,3},
+                    {8,3,1,5,4,9,7,6,2},
+                    {6,0,7,0,2,3,5,8,4},
+                    {2,4,0,6,7,0,1,3,0}
+            },
+            {
+                    {1,0,0,8,0,4,0,0,0},
+                    {0,2,0,0,0,0,4,5,6},
+                    {0,0,3,2,0,5,0,0,0},
+                    {0,0,0,4,0,0,8,0,5},
+                    {7,8,9,0,5,0,0,0,0},
+                    {0,0,0,0,0,6,2,0,3},
+                    {8,0,1,0,0,0,7,0,0},
+                    {0,0,0,1,2,3,0,8,0},
+                    {2,0,5,0,0,0,0,0,9}
+            },
+            {
+                    {0,0,2,0,3,0,1,0,0},
+                    {0,4,0,0,0,0,0,3,0},
+                    {1,0,5,0,0,0,0,8,2},
+                    {0,0,0,2,0,0,6,5,0},
+                    {9,0,0,0,8,7,0,0,3},
+                    {0,0,0,0,4,0,0,0,0},
+                    {8,0,0,0,7,0,0,0,4},
+                    {0,9,3,1,0,0,0,6,0},
+                    {0,0,7,0,6,0,5,0,0}
+            },
+            {
+                    {1,0,0,0,0,0,0,0,0},
+                    {0,0,2,7,4,0,0,0,0},
+                    {0,0,0,5,0,0,0,0,4},
+                    {0,3,0,0,0,0,0,0,0},
+                    {7,5,0,0,0,0,0,0,0},
+                    {0,0,0,0,0,9,6,0,0},
+                    {0,4,0,0,0,6,0,0,0},
+                    {0,0,0,0,0,0,0,7,1},
+                    {0,0,0,0,0,1,0,3,0}
+            }
     };
+
     
     @Override
     public void start(Stage primaryStage) {
+        templateselectioncombobox.getItems().setAll(
+                1,
+                2,
+                3,
+                4
+        );
+        templateselectioncombobox.setValue(1);
+        templateselectioncombobox.setOnAction((event) -> {
+            initSudokuValues();
+        });
+
+        Button reloadbtn = new Button();
+
         Button btn = new Button();
         btn.setText("Solve sudoku");
         btn.setOnAction((ActionEvent event) -> {
@@ -55,50 +110,45 @@ public class SudokuSolver extends Application {
                     cells[i][j] = (int)tempBox.getValue();
                 }
             }
-            
-            this.model.solve(cells);
-            if (false) {
-                for (int i = 0; i < 9; ++i) {
-                    for (int j = 0; j < 9; ++j) {
-                        ComboBox tempBox = (ComboBox)getNodeByRowColumnIndex(i, j);
-                        tempBox.setValue(cells[i][j]);
+
+            sudokuTable.getChildren().clear();
+            List<List<List<Integer>>> matrix = this.model.solve(cells);
+            for (int i = 0; i < 9; ++i) {
+                for (int j = 0; j < 9; ++j) {
+                    ComboBox tempBox = new ComboBox();
+                    List<Integer> toView = matrix.get(i).get(j);
+                    if (toView.size() > 1) {
+                        toView.add(0,0);
                     }
+                    tempBox.getItems().setAll(toView);
+                    tempBox.getSelectionModel().select(0);
+                    sudokuTable.add(tempBox, i, j);
                 }
-                
-                msgBox.message("Solution was found!");
-                msgBox.showInformation();
-            } else {
-                msgBox.message("There is no solution!");
-                msgBox.showInformation();
             }
+
+            msgBox.message("Complite!");
+            msgBox.showInformation();
+            btn.setVisible(false);
+            reloadbtn.setVisible(true);
         });
+
+
+        reloadbtn.setText("Again");
+        reloadbtn.setOnAction((ActionEvent event) -> {
+            initSudokuValues();
+            btn.setVisible(true);
+            reloadbtn.setVisible(false);
+        });
+        reloadbtn.setVisible(false);
  
         sudokuTable = new GridPane();
         sudokuTable.setAlignment(Pos.CENTER);
         sudokuTable.setHgap(5);
         sudokuTable.setVgap(5);
+
+        initSudokuValues();
         
-        for (int i = 0; i < 9; ++i) {
-            for (int j = 0; j < 9; ++j) {
-                ComboBox tempBox = new ComboBox();
-                tempBox.getItems().addAll(
-                    0,
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6,
-                    7,
-                    8,
-                    9
-                );
-                tempBox.setValue(initsudoku1[i][j]);
-                sudokuTable.add(tempBox, i, j);
-            }
-        }
-        
-        VBox vbox = new VBox(sudokuTable, btn);
+        VBox vbox = new VBox(templateselectioncombobox, sudokuTable, btn, reloadbtn);
         vbox.setAlignment(Pos.CENTER);
         vbox.setPadding(new Insets(10));
         vbox.setSpacing(10);
@@ -145,5 +195,30 @@ public class SudokuSolver extends Application {
             }
         }
         return result;
+    }
+
+    public void initSudokuValues() {
+        final int templatenum = ((int)templateselectioncombobox.getValue())-1;
+        sudokuTable.getChildren().clear();
+        for (int i = 0; i < 9; ++i) {
+            for (int j = 0; j < 9; ++j) {
+                ComboBox c = new ComboBox();
+                c.getItems().setAll(
+                        0,
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6,
+                        7,
+                        8,
+                        9
+                );
+
+                c.setValue(initsudoku[templatenum][i][j]);
+                sudokuTable.add(c, i, j);
+            }
+        }
     }
 }

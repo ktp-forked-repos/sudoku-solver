@@ -1,6 +1,8 @@
 package sudoku.solver;
 
 import jpl.*;
+
+import java.lang.Integer;
 import java.util.*;
 
 /**
@@ -18,26 +20,27 @@ public class SudokuModel {
         }
     }
     
-    public int[][] solve(int[][] cells) {
+    public List<List<List<Integer>>> solve(int[][] cells) {
         Query q = new Query("sudoku(" + buildMatrix(cells) + ", Result)");
         
         Term[] rows = Util.listToTermArray((Term)q.oneSolution().get("Result"));
-        int[][][] matrix = new int[rows.length][rows.length][];
+        List<List<List<Integer>>> matrix = new ArrayList<>();
         for (int i = 0; i < rows.length; ++i) {
             Term[] temp = Util.listToTermArray(rows[i]);
+            matrix.add(new ArrayList<>());
             for (int j = 0; j < temp.length; ++j) {
                 Term[] tempTerm = Util.listToTermArray(temp[j]);
-                int[] temp2 = new int[tempTerm.length];
+                List<Integer> temp2 = new ArrayList<>();
                 
                 for (int k = 0; k < tempTerm.length; ++k) {
-                    temp2[k] = tempTerm[k].intValue();
+                    temp2.add(tempTerm[k].intValue());
                 }
                         
-                matrix[i][j] = temp2;
+                matrix.get(i).add(temp2);
             }
         }
         
-        return new int[][] {};
+        return matrix;
     }
     
     private String buildMatrix(int[][] cells) {
