@@ -24,24 +24,26 @@ delete_element(Element, [Y|Tail1], [Y|Tail2], OutDeleted) :-
 % принимает массив массивов
 % в нем находит массивы, состоящие из 1 элемента
 % и удяляет эти элементы из остальных массивов
-all_different(L, LOUT) :- all_different_inner(L, L, 0, LOUT).
+all_different(L, LOUT) :- all_different_inner(L, L, 0, 0, LOUT).
 
 % all_different_inner(workingmatrix: Matrix, // матрица для поиска одиночных элементов
 %		      allmatrix: Matrix, // матрица для сокращения элементов
 %                     deleted: int, // сколько было удалено
 %                     out: Matrix) // выход
-all_different_inner([], L2, 0, L2).
-all_different_inner([[L|[]]|Tail], AllList, 0, LOUT) :-
+all_different_inner([], L2, 0, _, L2).
+all_different_inner([[L|[]]|Tail], AllList, 0, Index, LOUT) :-
 	%write(111), nl,
-	reduce_domains(L, AllList, 0, TDeleted, TLOUT),
+	reduce_domains(L, AllList, 0, TDeleted, Index, 0, TLOUT),
 	%write(TDeleted), nl,
-	all_different_inner(Tail, TLOUT, TDeleted, LOUT).
-all_different_inner([_|Tail], AllList, 0, LOUT) :-
+	plus(Index, 1, NewIndex),
+	all_different_inner(Tail, TLOUT, TDeleted, NewIndex, LOUT).
+all_different_inner([_|Tail], AllList, 0, Index, LOUT) :-
 	%write(222), nl,
-	all_different_inner(Tail, AllList, 0, LOUT).
-all_different_inner(_, L2, _, LOUT) :-
+	plus(Index, 1, NewIndex),
+	all_different_inner(Tail, AllList, 0, NewIndex, LOUT).
+all_different_inner(_, L2, _, _, LOUT) :-
 	%write(333), nl,
-	all_different_inner(L2, L2, 0, LOUT).
+	all_different_inner(L2, L2, 0, 0, LOUT).
 
 % reduce_domains(el: Vector, // что удаляем
 %		 m: Matrix, // откуда
@@ -49,14 +51,16 @@ all_different_inner(_, L2, _, LOUT) :-
 %                deletedout: int, // сколько удалили в итоге
 %                out: Matrix) // выход
 %
-reduce_domains(L, [[L|[]]|Tail], Deleted, OutDeleted,[[L]|OTail]) :-
+reduce_domains(L, [_|Tail], Deleted, OutDeleted, Index, Index, [[L]|OTail]) :-
 	%write(L),
-	reduce_domains(L,Tail, Deleted, OutDeleted, OTail).
-reduce_domains(L, [Element|Tail], Deleted, OutDeleted, [OutAllList|OTail]) :-
+	plus(Index, 1, NewIndex),
+	reduce_domains(L,Tail, Deleted, OutDeleted, Index, NewIndex, OTail).
+reduce_domains(L, [Element|Tail], Deleted, OutDeleted, TargetIndex, CurIndex, [OutAllList|OTail]) :-
 	delete_element(L, Element, OutAllList, HowMuchDeleted),
 	plus(Deleted, HowMuchDeleted, NewDeleted),
-	reduce_domains(L, Tail, NewDeleted , OutDeleted, OTail).
-reduce_domains(_,Elements, Deleted, Deleted, Elements).
+	plus(CurIndex, 1, NewCurIndex),
+	reduce_domains(L, Tail, NewDeleted , OutDeleted, TargetIndex, NewCurIndex, OTail).
+reduce_domains(_,Elements, Deleted, Deleted,_, _, Elements).
 
 % main
 sudoku(

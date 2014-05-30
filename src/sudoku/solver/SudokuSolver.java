@@ -124,7 +124,7 @@ public class SudokuSolver extends Application {
                     ComboBox tempBox = new ComboBox();
                     final List<Integer> toView = matrix.get(i).get(j);
                     tempBox.getItems().setAll(toView);
-                    if (toView.size() > 1) {
+                    if (toView.size() != 1) {
                         tempBox.getItems().add(0, "?");
                         issolutionfound = false;
                     }
