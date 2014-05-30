@@ -33,6 +33,7 @@ public class SudokuSolver extends Application {
     ComboBox templateselectioncombobox = new ComboBox();
     Button btn = new Button();
     Button reloadbtn = new Button();
+    VBox vbox;
 
     private final int[][][] initsudoku = {
             {
@@ -94,8 +95,8 @@ public class SudokuSolver extends Application {
         templateselectioncombobox.setValue(1);
         templateselectioncombobox.setOnAction((event) -> {
             initSudokuValues();
-            btn.setVisible(true);
-            reloadbtn.setVisible(false);
+            vbox.getChildren().removeAll(reloadbtn, btn);
+            vbox.getChildren().addAll(btn);
         });
 
         btn.setText("Solve sudoku");
@@ -117,6 +118,7 @@ public class SudokuSolver extends Application {
 
             sudokuTable.getChildren().clear();
             List<List<List<Integer>>> matrix = this.model.solve(cells);
+            boolean issolutionfound = true;
             for (int i = 0; i < 9; ++i) {
                 for (int j = 0; j < 9; ++j) {
                     ComboBox tempBox = new ComboBox();
@@ -124,26 +126,27 @@ public class SudokuSolver extends Application {
                     tempBox.getItems().setAll(toView);
                     if (toView.size() > 1) {
                         tempBox.getItems().add(0, "?");
+                        issolutionfound = false;
                     }
                     tempBox.getSelectionModel().select(0);
                     sudokuTable.add(tempBox, i, j);
                 }
             }
-
-            //msgBox.message("Complete!");
-            //msgBox.showInformation();
-            btn.setVisible(false);
-            reloadbtn.setVisible(true);
+            if (!issolutionfound) {
+                msgBox.message("Solution not found!");
+                msgBox.showInformation();
+            }
+            vbox.getChildren().removeAll(btn, reloadbtn);
+            vbox.getChildren().addAll(reloadbtn);
         });
 
 
         reloadbtn.setText("Again!");
         reloadbtn.setOnAction((ActionEvent event) -> {
             initSudokuValues();
-            btn.setVisible(true);
-            reloadbtn.setVisible(false);
+            vbox.getChildren().removeAll(btn, reloadbtn);
+            vbox.getChildren().addAll(btn);
         });
-        reloadbtn.setVisible(false);
  
         sudokuTable = new GridPane();
         sudokuTable.setAlignment(Pos.CENTER);
@@ -157,7 +160,7 @@ public class SudokuSolver extends Application {
         templateline.setPadding(new Insets(10));
         templateline.setSpacing(10);
 
-        VBox vbox = new VBox(templateline, sudokuTable, btn, reloadbtn);
+        vbox = new VBox(templateline, sudokuTable, btn);
         vbox.setAlignment(Pos.CENTER);
         vbox.setPadding(new Insets(10));
         vbox.setSpacing(10);
